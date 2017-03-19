@@ -9,6 +9,8 @@ CC = gcc
 LD = ld
 ASM = nasm
 
+HOME = /home/j
+
 C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector -I include
 LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
@@ -16,15 +18,12 @@ ASM_FLAGS = -f elf -g -F stabs
 all: $(S_OBJECTS) $(C_OBJECTS) link update_image
 
 .c.o:
-		@echo 编译代码文件 $< ...
 		$(CC) $(C_FLAGS) $< -o $@
 
 .s.o:
-		@echo 编译汇编文件 $< ...
 		$(ASM) $(ASM_FLAGS) $<
 
 link:
-		@echo 链接内核文件...
 		$(LD) $(LD_FLAGS) $(S_OBJECTS) $(C_OBJECTS) -o j_kernel
 
 .PHONY:clean
@@ -33,10 +32,10 @@ clean:
 
 .PHONY:update_image
 update_image:
-		sudo mount -o loop floppy.img /root/workspace/jos/sda
-		sudo cp j_kernel /root/workspace/jos/sda
+		sudo mount -o loop floppy.img $(HOME)/workspace/jos/sda
+		sudo cp j_kernel $(HOME)/workspace/jos/sda
 		sleep 1
-		sudo umount /root/workspace/jos/sda
+		sudo umount $(HOME)/workspace/jos/sda
 
 .PHONY:mount_image
 mount_image:
