@@ -40,6 +40,6 @@ void console_print_str_with_color (char *cstr, color_t back, color_t front);
 void console_print_hex(uint32_t n, color_t back, color_t front);
 
 //print int
-void console_write_dec(uint32_t n, color_t back, color_t front);
+void console_print_dec(uint32_t n, color_t back, color_t front);
 
 #endif /* INCLUDE_CONSOLE_H_ */

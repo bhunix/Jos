@@ -9,7 +9,12 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-HOME = /home/j
+HOSTNAME = $(shell hostname)
+ifeq ($(HOSTNAME), debian)
+	HOME = /root
+else
+	HOME = /home/j
+endif
 
 C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector -I include
 LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
@@ -39,11 +44,11 @@ update_image:
 
 .PHONY:mount_image
 mount_image:
-		sudo mount floppy.img /root/workspace/jos/sda
+		sudo mount floppy.img $(HOME)/workspace/jos/sda
 
 .PHONY:umount_image
 umount_image:
-		sudo umount /root/workspace/jos/sda
+		sudo umount $(HOME)/workspace/jos/sda
 
 .PHONY:qemu
 qemu:
