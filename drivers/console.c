@@ -2,6 +2,8 @@
 
 #define VGA_COLOR_ATTR(back, front) (((back) << 4) | ((front) & 0x0F))
 #define VGA_CHAR_MODE(c, back, front) ((c) | ((VGA_COLOR_ATTR(back, front))<<8))
+#define CRT_ROWS 25
+#define CRT_ROLS 80
 
 //VRAM address is 0xb8000
 static uint16_t *g_vram = (uint16_t *)0xB8000;
@@ -70,9 +72,9 @@ void console_print_char (char c, color_t back, color_t front)
     /* ascii code
      * 0x08 is backspace
      * 0x09 is tab */
-    if (c == 0x08 && g_cursor_x) {
+    if (c == '\b' && g_cursor_x) {
         g_cursor_x--;
-    } else if (c == 0x09) {
+    } else if (c == '\t') {
         g_cursor_x = (g_cursor_x+8) & ~(8-1);
     } else if (c == '\r') {
         g_cursor_x = 0;
