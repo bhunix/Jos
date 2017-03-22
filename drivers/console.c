@@ -4,64 +4,58 @@
 #define VGA_CHAR_MODE(c, back, front) ((c) | ((VGA_COLOR_ATTR(back, front))<<8))
 #define CRT_ROWS 25
 #define CRT_ROLS 80
+#define CRT_SIZE (CRT_ROWS * CRT_ROLS)
 
-//VRAM address is 0xb8000
-static uint16_t *g_vram = (uint16_t *)0xB8000;
+//CGA RAM address is 0xb8000
+static uint16_t *crt_buf = (uint16_t *)0xB8000;
 
-static uint8_t g_cursor_x = 0;
-static uint8_t g_cursor_y = 0;
+static uint8_t crt_x = 0;
+static uint8_t crt_y = 0;
 
-static void move_cursor ()
+static void set_crt_pos ()
 {
-    uint16_t cursor_pos = g_cursor_y * 80 + g_cursor_x;
+    uint16_t crt_pos = crt_y * CRT_ROLS + crt_x;
 
     outb(0x3D4, 14);
-    outb(0x3D5, cursor_pos >> 8);
+    outb(0x3D5, crt_pos >> 8);
     outb(0x3D4, 15);
-    outb(0x3D5, cursor_pos);
+    outb(0x3D5, crt_pos);
 }
 
 void console_clear()
 {
     int i;
-    //uint8_t color_attr = VGA_COLOR_ATTR(0, 15);
-
-    //fill console with space, 0x20 is ascii
-    //uint16_t space = 0x20 | (color_attr << 8);
     uint16_t space = VGA_CHAR_MODE (0x20, 0, 15);
 
-    for (i = 0; i < 80 * 25; i++) {
-        g_vram[i] = space;
+    for (i = 0; i < CRT_SIZE; i++) {
+        crt_buf[i] = space;
     }
 
-    g_cursor_x = 0;
-    g_cursor_y = 0;
-    move_cursor();
+    crt_x = 0;
+    crt_y = 0;
+    set_crt_pos();
 }
 
-static void scroll()
+static void console_scroll()
 {
     int i;
-    //uint8_t color_attr = VGA_COLOR_ATTR(0, 15);
-
-    //fill console with space, 0x20 is ascii
     uint16_t space = VGA_CHAR_MODE (0x20, 0, 15);
 
-    if (g_cursor_y >= 25)
+    if (crt_y >= CRT_ROWS)
     {
         //move up all line
-        for (i = 0; i < 24*80; i++)
+        for (i = 0; i < CRT_SIZE - CRT_ROLS; i++)
         {
-            g_vram[i] = g_vram[i+80];
+            crt_buf[i] = crt_buf[i+CRT_ROLS];
         }
 
         //clear the last line
-        for (i = 24*80; i < 25*80; i++)
+        for (i = CRT_SIZE-CRT_ROLS; i < CRT_SIZE; i++)
         {
-            g_vram[i] = space;
+            crt_buf[i] = space;
         }
 
-        g_cursor_y = 24;
+        crt_y = 24;
     }
 }
 
@@ -69,32 +63,29 @@ void console_print_char (char c, color_t back, color_t front)
 {
     uint16_t chart = VGA_CHAR_MODE (c, back, front);
 
-    /* ascii code
-     * 0x08 is backspace
-     * 0x09 is tab */
-    if (c == '\b' && g_cursor_x) {
-        g_cursor_x--;
+    if (c == '\b' && crt_x) {
+        crt_x--;
     } else if (c == '\t') {
-        g_cursor_x = (g_cursor_x+8) & ~(8-1);
+        crt_x = (crt_x+8) & ~(8-1);
     } else if (c == '\r') {
-        g_cursor_x = 0;
+        crt_x = 0;
     } else if (c == '\n') {
-        g_cursor_x = 0;
-        g_cursor_y++;
+        crt_x = 0;
+        crt_y++;
     } else if (c >= ' ') {
-        g_vram[g_cursor_y*80 + g_cursor_x] = chart;
-        g_cursor_x++;
+        crt_buf[crt_y*CRT_ROLS + crt_x] = chart;
+        crt_x++;
     }
 
-    if (g_cursor_x >= 80)
+    if (crt_x >= CRT_ROLS)
     {
-        g_cursor_x = 0;
-        g_cursor_y++;
+        crt_x = 0;
+        crt_y++;
     }
 
-    scroll();
+    console_scroll();
 
-    move_cursor();
+    set_crt_pos();
 }
 
 void console_print_str (char *cstr)
