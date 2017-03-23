@@ -106,41 +106,49 @@ void console_print_str_with_color (char *cstr, color_t back, color_t front)
 
 void console_print_hex(uint32_t n, color_t back, color_t front)
 {
-    int i;
+    int i, zero_flag = 1;
     uint8_t hex;
     uint16_t chart;
 
+    console_print_str_with_color ("0x", back, front);
+
     for (i = 7; i >= 0; i--)
     {
-        hex = (n >> i*4) & 0x0F; //get each hex
-        hex += (hex < 9)?0x30:0x57; //translate hex to ascii
+        hex = (n >> i*4) & 0xF; //get each hex
+        if (!hex && zero_flag)
+        {
+            //clear ahead zero
+            continue;
+        }
+        zero_flag = 0;
+        hex += (hex < 10)?'0':('a'-10); //translate hex to ascii
         chart = VGA_CHAR_MODE (hex, back, front);
         console_print_char (chart, back, front);
     }
 }
 
-#define MAX_INT_CNT 100
+#define MAX_INT_CNT 50
 void console_print_dec(uint32_t n, color_t back, color_t front)
 {
-    int ary_dec[MAX_INT_CNT];
-    int i, n_count;
-    uint16_t chart;
+    char c_dec[MAX_INT_CNT];
+    char c_dec2[MAX_INT_CNT];
+    int i, j;
     uint32_t dec = n;
 
-    n_count = 0;
     for (i = 0; i < MAX_INT_CNT && dec > 0; i++)
     {
-        ary_dec[i] = dec%10;
+        c_dec[i] = '0' + dec%10;
         dec /= 10;
-
-        n_count++;
     }
 
-    for (i = n_count-1; i >= 0; i--)
+    i--;
+    j = 0;
+    while (i >= 0)
     {
-        dec = ary_dec[i] + 0x30; //translate dec to ascii
-        chart = VGA_CHAR_MODE (dec, back, front);
-        console_print_char (chart, back, front);
+        c_dec2[j++] = c_dec[i--];
     }
+    c_dec2[j] = '\0';
+
+    console_print_str_with_color (c_dec2, back, front);
 }
 
