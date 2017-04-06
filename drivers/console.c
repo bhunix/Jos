@@ -135,16 +135,14 @@ void console_print_dec(uint32_t n, color_t back, color_t front)
     int i, j;
     uint32_t dec = n;
 
-    for (i = 0; i < MAX_INT_CNT && dec > 0; i++)
-    {
+    for (i = 0; i < MAX_INT_CNT && dec > 0; i++){
         c_dec[i] = '0' + dec%10;
         dec /= 10;
     }
 
     i--;
     j = 0;
-    while (i >= 0)
-    {
+    while (i >= 0){
         c_dec2[j++] = c_dec[i--];
     }
     c_dec2[j] = '\0';
