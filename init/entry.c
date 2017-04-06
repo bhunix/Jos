@@ -1,5 +1,16 @@
 #include "types.h"
 #include "console.h"
+#include "string.h"
+
+void string_test ()
+{
+    char s[11] = "hello";
+    char s2[10] = "world";
+    console_clear();
+    console_print_str_with_color (strcat(s, s2), rc_black, rc_green);
+    console_print_dec (strlen(s), rc_black, rc_green);
+    console_print_dec (strcmp(s, s), rc_black, rc_green);
+}
 
 void console_print_test ()
 {
@@ -12,6 +23,7 @@ void console_print_test ()
 
 int kern_entry()
 {
-    console_print_test ();
+    //console_print_test ();
+    string_test();
     return 0;
 }
