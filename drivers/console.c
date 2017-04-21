@@ -59,7 +59,12 @@ static void console_scroll()
     }
 }
 
-void console_print_char (char c, color_t back, color_t front)
+void console_print_char (char c)
+{
+    console_print_char_with_color (c, rc_black, rc_white);
+}
+
+void console_print_char_with_color (char c, color_t back, color_t front)
 {
     uint16_t chart = VGA_CHAR_MODE (c, back, front);
 
@@ -88,11 +93,21 @@ void console_print_char (char c, color_t back, color_t front)
     set_crt_pos();
 }
 
+void console_print_dec(uint32_t n)
+{
+    console_print_dec_with_color(n, rc_black, rc_white);
+}
+
+void console_print_hex(uint32_t n)
+{
+    console_print_hex_with_color(n, rc_black, rc_white);
+}
+
 void console_print_str (char *cstr)
 {
     while (*cstr)
     {
-        console_print_char (*cstr++, rc_black, rc_white);
+        console_print_char (*cstr++);
     }
 }
 
@@ -100,11 +115,11 @@ void console_print_str_with_color (char *cstr, color_t back, color_t front)
 {
     while (*cstr)
     {
-        console_print_char (*cstr++, back, front);
+        console_print_char_with_color (*cstr++, back, front);
     }
 }
 
-void console_print_hex(uint32_t n, color_t back, color_t front)
+void console_print_hex_with_color(uint32_t n, color_t back, color_t front)
 {
     int i, zero_flag = 1;
     uint8_t hex;
@@ -123,12 +138,12 @@ void console_print_hex(uint32_t n, color_t back, color_t front)
         zero_flag = 0;
         hex += (hex < 10)?'0':('a'-10); //translate hex to ascii
         chart = VGA_CHAR_MODE (hex, back, front);
-        console_print_char (chart, back, front);
+        console_print_char_with_color (chart, back, front);
     }
 }
 
 #define MAX_INT_CNT 50
-void console_print_dec(uint32_t n, color_t back, color_t front)
+void console_print_dec_with_color(uint32_t n, color_t back, color_t front)
 {
     char c_dec[MAX_INT_CNT];
     char c_dec2[MAX_INT_CNT];
