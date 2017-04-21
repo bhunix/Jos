@@ -28,18 +28,19 @@ enum real_color {
 void console_clear();
 
 //print char
-void console_print_char(char c, color_t back, color_t front);
+void console_print_char_with_color(char c, color_t back, color_t front);
+void console_print_char(char c);
 
-//print str end by '\0' with default color
+//print str end by '\0'
+void console_print_str_with_color (char *cstr, color_t back, color_t front);
 void console_print_str(char *cstr);
 
-//print str end by '\0' with color
-void console_print_str_with_color (char *cstr, color_t back, color_t front);
-
 //print hex
-void console_print_hex(uint32_t n, color_t back, color_t front);
+void console_print_hex_with_color(uint32_t n, color_t back, color_t front);
+void console_print_hex(uint32_t n);
 
 //print int
-void console_print_dec(uint32_t n, color_t back, color_t front);
+void console_print_dec_with_color(uint32_t n, color_t back, color_t front);
+void console_print_dec(uint32_t n);
 
 #endif /* INCLUDE_CONSOLE_H_ */
