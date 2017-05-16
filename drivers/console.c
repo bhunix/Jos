@@ -146,22 +146,17 @@ void console_print_hex_with_color(uint32_t n, color_t back, color_t front)
 void console_print_dec_with_color(uint32_t n, color_t back, color_t front)
 {
     char c_dec[MAX_INT_CNT];
-    char c_dec2[MAX_INT_CNT];
-    int i, j;
+    int len;
     uint32_t dec = n;
 
-    for (i = 0; i < MAX_INT_CNT && dec > 0; i++){
-        c_dec[i] = '0' + dec%10;
+    len = MAX_INT_CNT-1;
+    c_dec[len--] = '\0';
+    for (; len > 0 && dec > 0; len--){
+        c_dec[len] = '0' + dec%10;
         dec /= 10;
     }
+    len++;
 
-    i--;
-    j = 0;
-    while (i >= 0){
-        c_dec2[j++] = c_dec[i--];
-    }
-    c_dec2[j] = '\0';
-
-    console_print_str_with_color (c_dec2, back, front);
+    console_print_str_with_color (&c_dec[len], back, front);
 }
 
