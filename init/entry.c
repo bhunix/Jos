@@ -22,11 +22,22 @@ void console_print_test ()
     console_print_dec (12345678);
 }
 
+void printk_test()
+{
+    int n=123456;
+    console_clear();
+    printk("%10s\n", "hello");
+    printk("%s\n", "world");
+    printk("%x\n", 0x123abc);
+    printk("%d\n", n);
+    printk("%p\n", &n);
+}
+
 int kern_entry()
 {
     //console_print_test ();
     //string_test();
     //console_clear();
-    printk("%-10d",1234);
+    printk_test();
     return 0;
 }
